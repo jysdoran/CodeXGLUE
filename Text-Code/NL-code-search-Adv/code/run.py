@@ -151,7 +151,6 @@ def train(args, train_dataset, model, tokenizer):
     args.save_steps=len( train_dataloader)//10
     args.warmup_steps=len( train_dataloader)
     args.logging_steps=len( train_dataloader)
-    args.num_train_epochs=args.epoch
     model.to(args.device)
     # Prepare optimizer and schedule (linear warmup and decay)
     no_decay = ['bias', 'LayerNorm.weight']
@@ -195,7 +194,7 @@ def train(args, train_dataset, model, tokenizer):
     # Train!
     logger.info("***** Running training *****")
     logger.info("  Num examples = %d", len(train_dataset))
-    logger.info("  Num Epochs = %d", args.num_train_epochs)
+    logger.info("  Num Epochs = %d", args.epoch)
     logger.info("  Instantaneous batch size per GPU = %d", args.per_gpu_train_batch_size)
     logger.info("  Total train batch size (w. parallel, distributed & accumulation) = %d",
                 args.train_batch_size * args.gradient_accumulation_steps * (
@@ -211,7 +210,7 @@ def train(args, train_dataset, model, tokenizer):
     model.zero_grad()
 
  
-    for idx in range(args.start_epoch, int(args.num_train_epochs)): 
+    for idx in range(args.start_epoch, args.epoch): 
         bar = train_dataloader
         tr_num=0
         train_loss=0
@@ -459,13 +458,12 @@ def main():
                         help="Epsilon for Adam optimizer.")
     parser.add_argument("--max_grad_norm", default=1.0, type=float,
                         help="Max gradient norm.")
-    parser.add_argument("--num_train_epochs", default=1.0, type=float,
+    parser.add_argument('--epoch', type=int, default=1,
                         help="Total number of training epochs to perform.")
     parser.add_argument("--max_steps", default=-1, type=int,
-                        help="If > 0: set total number of training steps to perform. Override num_train_epochs.")
+                        help="If > 0: set total number of training steps to perform.")
     parser.add_argument("--warmup_steps", default=0, type=int,
                         help="Linear warmup over warmup_steps.")
-
     parser.add_argument('--logging_steps', type=int, default=50,
                         help="Log every X updates steps.")
     parser.add_argument('--save_steps', type=int, default=50,
@@ -481,8 +479,6 @@ def main():
     parser.add_argument('--overwrite_cache', action='store_true',
                         help="Overwrite the cached training and evaluation sets")
     parser.add_argument('--seed', type=int, default=42,
-                        help="random seed for initialization")
-    parser.add_argument('--epoch', type=int, default=42,
                         help="random seed for initialization")
     parser.add_argument('--fp16', action='store_true',
                         help="Whether to use 16-bit (mixed) precision (through NVIDIA apex) instead of 32-bit")
