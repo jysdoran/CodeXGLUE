@@ -205,7 +205,6 @@ def train(args, train_dataset, model, tokenizer):
     global_step = args.start_step
     tr_loss, logging_loss,avg_loss,tr_nb,tr_num,train_loss = 0.0, 0.0,0.0,0,0,0
     best_mrr=0.0
-    best_acc=0.0
     # model.resize_token_embeddings(len(tokenizer))
     model.zero_grad()
 
@@ -266,10 +265,10 @@ def train(args, train_dataset, model, tokenizer):
                         tr_num=0
                         train_loss=0
  
-                    if results['eval_mrr']>best_acc:
-                        best_acc=results['eval_mrr']
+                    if results['eval_mrr']>best_mrr:
+                        best_mrr=results['eval_mrr']
                         logger.info("  "+"*"*20)  
-                        logger.info("  Best mrr:%s",round(best_acc,4))
+                        logger.info("  Best mrr:%s",round(best_mrr,4))
                         logger.info("  "+"*"*20)                          
                         
                         checkpoint_prefix = 'checkpoint-best-mrr'
